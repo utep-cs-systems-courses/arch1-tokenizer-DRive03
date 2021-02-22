@@ -91,10 +91,32 @@ char *copy_str(char *inStr, short len)
      tokens[2] = "string" 
      tokens[3] = 0
 */
-char **tokenize(char* str);
+char **tokenize(char* str)
+{
+  int nowrds=count_words(*str);
+  char **p=malloc((nowrds+1)*sizeof(char*));
+  for(int i=0;i<nowrds;i++)
+    {
+      if(str[0]=' ')
+	{
+	  str= word_start(str);
+	}
+      int length = word_terminator(str)-wordstart(str);
+      token_ptr[i]=copy_str(str,length);
+      str=word_start(word_terminator(str));
+    }
+  return token_ptr;
+}
 
 /* Prints all tokens. */
-void print_tokens(char **tokens);
+void print_tokens(char **tokens)
+{
+  while(tokens != '\0')
+    {
+      printf(*tokens);
+      tokens++;
+    }
+}
 
 /* Frees all tokens and the vector containing themx. */
 void free_tokens(char **tokens);
