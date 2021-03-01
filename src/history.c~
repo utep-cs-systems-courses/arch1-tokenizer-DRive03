@@ -1,5 +1,7 @@
-#ifndef _HISTORY_
-#define _HISTORY_
+#include <stdio.h>
+#include "tokenizer.h"
+#include <ctype.h>
+#include <stdlib.h>
 
 typedef struct s_Item {
   int id;
@@ -12,7 +14,13 @@ typedef struct s_List {
 } List;
 
 /*Initialize the linked list to keep the history. */
-List* init_history();
+List* init_history()
+{
+  struct s_item* head=NULL;
+  struct s_List* list;
+  list->root=head;
+  
+}
 
 /*Add a history item to the end of the list.
    List* list - the linked list
@@ -30,5 +38,3 @@ void print_history(List *list);
 
 /* Free the history list and the strings it references. */
 void free_history(List *list);
-
-#endif

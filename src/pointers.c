@@ -1,85 +1,89 @@
 #include <stdio.h>
 #include "tokenizer.h"
 #include <ctype.h>
+#include <stdlib.h>
 
 /* Return true (non-zero) if c is a whitespace characer
    ('\t' or ' ').  
    Zero terminators are not printable (therefore false) */
 int space_char(char c)
  {
-   int x = isspace(c);
-   return x;
+   if(c == ' ' || c == '\t')
+     return 1;
+   else
+     return 0;
  }
  
 /* Return true (non-zero) if c is a non-whitespace 
    character (not tab or space).  
    Zero terminators are not printable (therefore false) */ 
 int non_space_char(char c)
-{
-     if(c != '\0')
-       printf("%s its not an empty character (not a space)");
+{   
+     if(c != '\0'|| c=='\n')
+       return 1;
      else
-       printf("%s its an empty character (not a space)");
+       return 0;
 }
+
 /* Returns a pointer to the first character of the next 
    space-separated word in zero-terminated str.  Return a zero pointer if 
    str does not contain any words. */
 char *word_start(char *str)
 {
-  char prev=*str;
-  int i=0;
-  while (i==0)
-  {
-    if (isspace(prev) && !isspace(*str+1))
-      {
-	i++;
-      }
-    *str++;
-    prev=*str;
-  }
-  
+  while( (*str != ' ' && *str != '\t') && *str != '\0')
+    {
+      str++;
+    }
   return str;
 }
+
 /* Returns a pointer terminator char following *word */
 char *word_terminator(char *word)
 {
-  int swch=0;
-  while(*word!='\0')
+  char *wrd = word;
+  while(*wrd != ' ')
     {
-      word++;
+      wrd++;
     }
-  return word;
+  *wrd='\0';
+  
+  return wrd;
 }
 
 /* Counts the number of words in the string argument. */
-int count_words(char *str)
+int count_words(char* str)
 {
-  char prev;
-  int count = 0;
-  for (prev=*str ; *str!='\0' ; *str++)
+  char *p=str;
+  int swtch=0;
+  int count = 0;      
+  for ( ; *p !='\0' ; *p++)
   {  
-    if (isspace(prev) && !isspace(*(str+1)))
+    if( (swtch == 0) && ((*p != ' ') && (*p != '\t')) )
       {
+	swtch=1;
 	count++;
       }
-   prev=*str; 
-   // printf("C: %c \n",prev);
+    if( (swtch == 1) && ((*p == ' ') || (*p == '\t')) )
+      {
+	swtch=0;
+      }
   }
-  
-  return count+1;
+  return count;
 }
+
 /* Returns a fresly allocated new zero-terminated string 
    containing <len> chars from <inStr> */
-char *copy_str(char *inStr, short len)
+char *copy_str(char* inStr, short len)
 {
-  char newStr[len];
-  for(int i=0;i<len;i++)
+  short i=0;
+  char* newStr=(char*) malloc(sizeof( (len+1) ) );
+  while( ( (*newStr = *inStr) != '\0' ) && i < len )
     {
-      newStr[i]=*inStr;
+      newStr++;
       inStr++;
+      i++;
     }
-  char *p=newStr;
-  return p;
+  return newStr;
 }
 
 /* Returns a freshly allocated zero-terminated vector of freshly allocated 
@@ -91,32 +95,50 @@ char *copy_str(char *inStr, short len)
      tokens[2] = "string" 
      tokens[3] = 0
 */
+/////////////////////////////////////////////////////////////
 char **tokenize(char* str)
 {
-  int nowrds=count_words(*str);
-  char **p=malloc((nowrds+1)*sizeof(char*));
+  printf("a \n");
+  int nowrds=count_words(str);//number of words in the string for the array
+  printf("b \n");
+  char **token_ptr= malloc( (nowrds+1)*sizeof(char*) );
+  printf("c \n");
   for(int i=0;i<nowrds;i++)
     {
-      if(str[0]=' ')
+      printf("d \n");
+      if(str[0]=' ') 
 	{
-	  str= word_start(str);
+	  printf("e \n");
+	  str= word_start(str);//if the first char is space move to the first word
 	}
-      int length = word_terminator(str)-wordstart(str);
-      token_ptr[i]=copy_str(str,length);
+      printf("f \n");
+      int length = ( (word_terminator(str)) - (word_start(str)) );//end of word - start of word = length
+      printf("g \n");
+      token_ptr[i] = copy_str(str,length);
+      printf("h \n");
       str=word_start(word_terminator(str));
-    }
+      printf("i \n");
+    }  
   return token_ptr;
-}
+  }
 
-/* Prints all tokens. */
+/* Prints all tokens. *///
+///////////////////////////////////////////////////////////////////////
 void print_tokens(char **tokens)
 {
-  while(tokens != '\0')
+  while(**tokens != '\0')
     {
-      printf(*tokens);
+      printf("%s", *tokens);
       tokens++;
     }
 }
-
+/////////////////////////////////////////////////////////
 /* Frees all tokens and the vector containing themx. */
-void free_tokens(char **tokens);
+void free_tokens(char **tokens)
+{
+  while(**tokens != '\0')
+    {
+      free(*tokens);
+      tokens++;
+    }
+}
